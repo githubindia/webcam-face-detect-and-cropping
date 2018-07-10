@@ -7,6 +7,7 @@ from PIL import Image
 
 cascPath = "haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
+eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 log.basicConfig(filename='webcam.log',level=log.INFO)
 
 video_capture = cv2.VideoCapture('sample_video.mov')
@@ -33,9 +34,16 @@ while True:
     # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
         # cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        sub_face = frame[y:y+h, x:x+w]
-        FaceFileName = "unknownfaces/face_" + str(y) + ".jpg"
-        cv2.imwrite(FaceFileName, sub_face)
+        # sub_face = frame[y:y+h, x:x+w]
+        # FaceFileName = "unknownfaces/face_" + str(y) + ".jpg"
+        # cv2.imwrite(FaceFileName, sub_face)
+        roi_gray = gray[y:y+h, x:x+w]
+        eyes = eye_cascade.detectMultiScale(roi_gray)
+        for (ex,ey,ew,eh) in eyes:
+            # cv2.rectangle(frame,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+            sub_face = frame[y:y+h, x:x+w]
+            FaceFileName = "unknownfaces/face_" + str(y) + ".jpg"
+            cv2.imwrite(FaceFileName, sub_face)
 
     if anterior != len(faces):
         anterior = len(faces)
